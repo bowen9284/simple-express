@@ -1,27 +1,29 @@
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: my-app-2
   labels:
-    app: my-app-2
+    service: reverseproxy
+  name: reverseproxy
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: my-app-2
   template:
     metadata:
       labels:
-        app: my-app-2
+        service: reverseproxy
     spec:
       containers:
-      - name: simple-express
-        image: bowen9284/simple-express
+      - image: bowen9284/simple-reverse-proxy
+        name: reverseproxy
+        imagePullPolicy: Always          
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"       
         ports:
         - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 3
-          periodSeconds: 3
+      restartPolicy: Always
+
+
